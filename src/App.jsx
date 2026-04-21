@@ -44,6 +44,7 @@ export default function App() {
   const [showCameras, setShowCameras] = useState(true);
   const [selectedRoute, setSelectedRoute] = useState(0);
   const [allRoutes, setAllRoutes] = useState([]);
+  const [routeOptions, setRouteOptions] = useState([]);
   const [camerasOnRoute, setCamerasOnRoute] = useState([]);
   const [mapZoom, setMapZoom] = useState(13);
 
@@ -85,6 +86,7 @@ export default function App() {
     setDirections(null);
     setRouteInfo(null);
     setCamerasOnRoute([]);
+    setRouteOptions([]);
 
     try {
       const directionsService = new window.google.maps.DirectionsService();
@@ -130,26 +132,32 @@ export default function App() {
           cameras,
           durationInTrafficValue,
           score,
+          durationText: leg?.duration_in_traffic?.text || leg?.duration?.text || "-",
+          distanceText: leg?.distance?.text || "-",
         };
       });
 
-      scored.sort((a, b) => a.score - b.score);
-      const best = scored[0];
+      const ranked = [...scored].sort((a, b) => a.score - b.score);
+      const best = ranked[0];
 
-      const reorderedRoutes = [...routes];
-      const bestRoute = reorderedRoutes.splice(best.idx, 1)[0];
-      reorderedRoutes.unshift(bestRoute);
-
-      const newResult = { ...result, routes: reorderedRoutes };
-      setDirections(newResult);
-      setSelectedRoute(0);
+      setDirections(result);
+      setSelectedRoute(best.idx);
+      setRouteOptions(
+        ranked.map((r, rank) => ({
+          idx: r.idx,
+          rank,
+          duration: r.durationText,
+          distance: r.distanceText,
+          cameras: r.cameras,
+        }))
+      );
 
       const camsOnBest = findCamerasOnRoute(best.route, ZBE_CAMERAS, CAMERA_THRESHOLD_M);
       setCamerasOnRoute(camsOnBest);
 
       setRouteInfo({
-        duration: best.leg.duration_in_traffic?.text || best.leg.duration.text,
-        distance: best.leg.distance.text,
+        duration: best.durationText,
+        distance: best.distanceText,
         cameras: best.cameras,
         avoided: avoidZBE && best.cameras === 0,
         routeIndex: best.idx,
@@ -180,6 +188,31 @@ export default function App() {
       calculateRoute();
     }
   }, [origin, destination, avoidZBE]);
+
+  // Center on user location
+  const selectRoute = useCallback(
+    (routeIdx) => {
+      if (!allRoutes.length) return;
+      const route = allRoutes[routeIdx];
+      if (!route) return;
+
+      const leg = route.legs[0];
+      const cameras = countCamerasOnRoute(route, ZBE_CAMERAS, CAMERA_THRESHOLD_M);
+      const camsOnSelected = findCamerasOnRoute(route, ZBE_CAMERAS, CAMERA_THRESHOLD_M);
+
+      setSelectedRoute(routeIdx);
+      setCamerasOnRoute(camsOnSelected);
+      setRouteInfo({
+        duration: leg?.duration_in_traffic?.text || leg?.duration?.text || "-",
+        distance: leg?.distance?.text || "-",
+        cameras,
+        avoided: avoidZBE && cameras === 0,
+        routeIndex: routeIdx,
+        totalRoutes: allRoutes.length,
+      });
+    },
+    [allRoutes, avoidZBE]
+  );
 
   // Center on user location
   const centerOnUser = () => {
@@ -279,7 +312,7 @@ export default function App() {
         {directions && (
           <DirectionsRenderer
             directions={directions}
-            routeIndex={0}
+            routeIndex={selectedRoute}
             options={{
               suppressMarkers: false,
               polylineOptions: {
@@ -355,6 +388,9 @@ export default function App() {
               info={routeInfo}
               avoidZBE={avoidZBE}
               onRecalculate={calculateRoute}
+              routes={routeOptions}
+              selectedRoute={selectedRoute}
+              onSelectRoute={selectRoute}
             />
           )}
         </div>

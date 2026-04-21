@@ -1,7 +1,14 @@
 import React from "react";
 
-export default function RouteInfo({ info, avoidZBE, onRecalculate }) {
-  const { duration, distance, cameras, avoided, totalRoutes } = info;
+export default function RouteInfo({
+  info,
+  avoidZBE,
+  onRecalculate,
+  routes = [],
+  selectedRoute = 0,
+  onSelectRoute,
+}) {
+  const { duration, distance, cameras, totalRoutes } = info;
 
   return (
     <div
@@ -106,6 +113,52 @@ export default function RouteInfo({ info, avoidZBE, onRecalculate }) {
             <p className="text-zbe-red/80 text-xs leading-snug">
               Esta es la ruta con <strong className="text-zbe-red">{cameras} {cameras === 1 ? "cámara" : "cámaras"}</strong> — la mejor disponible. Considera ajustar el origen o destino.
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Alternative routes */}
+      {routes.length > 1 && (
+        <div className="px-4 pb-4">
+          <div className="border border-zbe-border rounded-2xl overflow-hidden">
+            <div className="px-3 py-2 text-[11px] tracking-wide uppercase text-white/40 bg-white/5">
+              Rutas alternativas
+            </div>
+            <div className="divide-y divide-zbe-border/70">
+              {routes.map((route) => {
+                const isActive = route.idx === selectedRoute;
+                return (
+                  <button
+                    key={route.idx}
+                    onClick={() => onSelectRoute && onSelectRoute(route.idx)}
+                    className={`w-full px-3 py-2.5 text-left transition-all ${
+                      isActive ? "bg-zbe-blue/15" : "hover:bg-white/5"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-[11px] px-1.5 py-0.5 rounded-md font-semibold ${
+                          isActive
+                            ? "text-zbe-blue bg-zbe-blue/20"
+                            : "text-white/50 bg-white/10"
+                        }`}
+                      >
+                        {route.rank === 0 ? "Mejor" : `Alt ${route.rank + 1}`}
+                      </span>
+                      <span className="text-sm font-semibold text-white">{route.duration}</span>
+                      <span className="text-xs text-white/60">{route.distance}</span>
+                      <span
+                        className={`ml-auto text-xs ${
+                          route.cameras === 0 ? "text-zbe-green" : "text-yellow-400"
+                        }`}
+                      >
+                        {route.cameras} cam
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
