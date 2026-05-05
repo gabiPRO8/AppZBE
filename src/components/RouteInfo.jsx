@@ -11,10 +11,16 @@ export default function RouteInfo({
   const { duration, distance, cameras, totalRoutes, routeIndex } = info;
   const [isExpanded, setIsExpanded] = useState(false);
   const hasAlternatives = routes.length > 1;
+  let panelLabel = "Detalle de ruta";
+  if (isExpanded) {
+    panelLabel = "Minimizar";
+  } else if (hasAlternatives) {
+    panelLabel = "Rutas alternativas";
+  }
 
   useEffect(() => {
     setIsExpanded(false);
-  }, [routeIndex, totalRoutes]);
+  }, [routeIndex]);
 
   const toggleExpanded = () => setIsExpanded((prev) => !prev);
 
@@ -33,7 +39,7 @@ export default function RouteInfo({
       >
         <div className="w-10 h-1.5 rounded-full bg-white/20" />
         <div className="flex items-center gap-1 text-[11px] tracking-widest uppercase">
-          <span>{isExpanded ? "Minimizar" : hasAlternatives ? "Rutas alternativas" : "Detalle de ruta"}</span>
+          <span>{panelLabel}</span>
           <svg
             width="12"
             height="12"
