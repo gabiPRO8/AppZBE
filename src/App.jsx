@@ -354,7 +354,13 @@ export default function App() {
 
       {/* ── BOTTOM CONTROLS ── */}
       <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-        <div className="flex flex-col items-end gap-3 px-4 pb-6 pointer-events-auto">
+        <div
+          className="flex flex-col items-end gap-3 px-4 pointer-events-auto overflow-y-auto"
+          style={{
+            paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))',
+            maxHeight: 'calc(100vh - 160px)',
+          }}
+        >
           {/* Zoom + locate buttons */}
           <div className="flex flex-col gap-2 items-end">
             <button

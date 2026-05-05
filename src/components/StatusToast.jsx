@@ -40,13 +40,13 @@ export default function StatusToast({ status }) {
   if (!status) return null;
 
   return (
-    <div className="absolute top-32 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-fade-in">
+    <div className="absolute top-32 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-fade-in w-max max-w-[90vw]">
       <div
-        className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border backdrop-blur-xl shadow-2xl ${COLORS[status.type]}`}
+        className={`flex items-start gap-2.5 px-4 py-2.5 rounded-2xl border backdrop-blur-xl shadow-2xl ${COLORS[status.type]}`}
         style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.6)" }}
       >
-        {ICONS[status.type]}
-        <span className="text-sm font-medium whitespace-nowrap">{status.message}</span>
+        <span className="flex-shrink-0 mt-0.5">{ICONS[status.type]}</span>
+        <span className="text-sm font-medium leading-snug">{status.message}</span>
       </div>
     </div>
   );

@@ -38,7 +38,9 @@ export default function SearchPanel({
   };
 
   return (
-    <div className="absolute top-0 left-0 right-0 z-10 px-3 pt-3 pb-2 pointer-events-none">
+    <div className="absolute top-0 left-0 right-0 z-10 px-3 pointer-events-none"
+      style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top, 0px))' }}
+    >
       <div
         className="bg-zbe-card/95 backdrop-blur-xl border border-zbe-border rounded-3xl shadow-2xl overflow-hidden pointer-events-auto animate-fade-in"
         style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.7)" }}
@@ -79,13 +81,13 @@ export default function SearchPanel({
                 value={originText}
                 onChange={(e) => setOriginText(e.target.value)}
                 placeholder="Origen…"
-                className="w-full bg-transparent text-white text-sm placeholder-white/30 outline-none py-1"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                className="w-full bg-transparent text-white text-base placeholder-white/30 outline-none py-1"
+                style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '16px' }}
               />
             </Autocomplete>
             <button
               onClick={onMyLocation}
-              className="flex-shrink-0 w-7 h-7 rounded-xl bg-zbe-blue/10 flex items-center justify-center text-zbe-blue hover:bg-zbe-blue/20 transition-all"
+              className="flex-shrink-0 w-9 h-9 rounded-xl bg-zbe-blue/10 flex items-center justify-center text-zbe-blue hover:bg-zbe-blue/20 transition-all"
               aria-label="Usar mi ubicación"
               title="Mi ubicación GPS"
             >
@@ -123,8 +125,8 @@ export default function SearchPanel({
                 value={destinationText}
                 onChange={(e) => setDestinationText(e.target.value)}
                 placeholder="¿A dónde vas?"
-                className="w-full bg-transparent text-white text-sm placeholder-white/30 outline-none py-1 font-medium"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+                className="w-full bg-transparent text-white text-base placeholder-white/30 outline-none py-1 font-medium"
+                style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '16px' }}
               />
             </Autocomplete>
             {destinationText && (
@@ -132,7 +134,7 @@ export default function SearchPanel({
                 onClick={() => {
                   setDestinationText("");
                 }}
-                className="flex-shrink-0 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/20 transition-all"
+                className="flex-shrink-0 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/20 transition-all"
               >
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
                   <path d="M18 6L6 18M6 6l12 12" />
