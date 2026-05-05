@@ -11,18 +11,25 @@ export default function RouteInfo({
   const { duration, distance, cameras, totalRoutes, routeIndex } = info;
   const [isExpanded, setIsExpanded] = useState(false);
   const hasAlternatives = routes.length > 1;
-  let panelLabel = "Detalle de ruta";
-  if (isExpanded) {
-    panelLabel = "Minimizar";
-  } else if (hasAlternatives) {
-    panelLabel = "Rutas alternativas";
-  }
+
+  const getPanelLabel = (expanded, alternatives) => {
+    if (expanded) return "Minimizar";
+    if (alternatives) return "Rutas alternativas";
+    return "Detalle de ruta";
+  };
+  const panelLabel = getPanelLabel(isExpanded, hasAlternatives);
 
   useEffect(() => {
     setIsExpanded(false);
   }, [routeIndex]);
 
   const toggleExpanded = () => setIsExpanded((prev) => !prev);
+  const handleRouteSelect = (routeIdx) => {
+    if (onSelectRoute) {
+      onSelectRoute(routeIdx);
+    }
+    setIsExpanded(false);
+  };
 
   return (
     <div
@@ -171,12 +178,7 @@ export default function RouteInfo({
                 return (
                   <button
                     key={route.idx}
-                    onClick={() => {
-                      if (onSelectRoute) {
-                        onSelectRoute(route.idx);
-                      }
-                      setIsExpanded(false);
-                    }}
+                    onClick={() => handleRouteSelect(route.idx)}
                     className={`w-full px-3 py-2.5 text-left transition-all ${
                       isActive ? "bg-zbe-blue/15" : "hover:bg-white/5"
                     }`}
