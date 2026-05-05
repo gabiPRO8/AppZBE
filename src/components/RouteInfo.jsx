@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function RouteInfo({
   info,
@@ -8,13 +8,60 @@ export default function RouteInfo({
   selectedRoute = 0,
   onSelectRoute,
 }) {
-  const { duration, distance, cameras, totalRoutes } = info;
+  const { duration, distance, cameras, totalRoutes, routeIndex } = info;
+  const [isExpanded, setIsExpanded] = useState(false);
+  const hasAlternatives = routes.length > 1;
+
+  const getPanelLabel = (expanded, alternatives) => {
+    if (expanded) return "Minimizar";
+    if (alternatives) return "Rutas alternativas";
+    return "Detalle de ruta";
+  };
+  const panelLabel = getPanelLabel(isExpanded, hasAlternatives);
+
+  useEffect(() => {
+    setIsExpanded(false);
+  }, [routeIndex]);
+
+  const toggleExpanded = () => setIsExpanded((prev) => !prev);
+  const handleRouteSelect = (routeIdx) => {
+    if (!onSelectRoute) return;
+    onSelectRoute(routeIdx);
+    setIsExpanded(false);
+  };
 
   return (
     <div
       className="w-full bg-zbe-card/95 backdrop-blur-xl border border-zbe-border rounded-3xl shadow-2xl overflow-hidden animate-slide-up"
       style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.7)" }}
     >
+      {/* Slide handle */}
+      <button
+        type="button"
+        onClick={toggleExpanded}
+        aria-expanded={isExpanded}
+        aria-label={isExpanded ? "Minimizar panel de rutas" : "Mostrar panel de rutas"}
+        className="w-full flex flex-col items-center gap-1 px-4 pt-3 pb-2 text-white/50 hover:text-white/70 transition-all"
+      >
+        <div className="w-10 h-1.5 rounded-full bg-white/20" />
+        <div className="flex items-center gap-1 text-[11px] tracking-widest uppercase">
+          <span>{panelLabel}</span>
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+      </button>
+
       {/* Status bar */}
       <div
         className={`px-4 py-2.5 flex items-center gap-2 ${
@@ -102,7 +149,7 @@ export default function RouteInfo({
       </div>
 
       {/* Camera warning detail */}
-      {avoidZBE && cameras > 0 && (
+      {isExpanded && avoidZBE && cameras > 0 && (
         <div className="px-4 pb-3">
           <div className="bg-zbe-red/5 border border-zbe-red/20 rounded-2xl px-3 py-2 flex items-start gap-2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 flex-shrink-0">
@@ -118,7 +165,7 @@ export default function RouteInfo({
       )}
 
       {/* Alternative routes */}
-      {routes.length > 1 && (
+      {isExpanded && routes.length > 1 && (
         <div className="px-4 pb-4">
           <div className="border border-zbe-border rounded-2xl overflow-hidden">
             <div className="px-3 py-2 text-[11px] tracking-wide uppercase text-white/40 bg-white/5">
@@ -130,7 +177,7 @@ export default function RouteInfo({
                 return (
                   <button
                     key={route.idx}
-                    onClick={() => onSelectRoute && onSelectRoute(route.idx)}
+                    onClick={() => handleRouteSelect(route.idx)}
                     className={`w-full px-3 py-2.5 text-left transition-all ${
                       isActive ? "bg-zbe-blue/15" : "hover:bg-white/5"
                     }`}
