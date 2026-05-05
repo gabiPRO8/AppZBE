@@ -388,7 +388,9 @@ export default function App() {
               }`} />
               <span className="text-white text-sm font-semibold">{routeInfo.duration}</span>
               <span className="text-white/50 text-sm">{routeInfo.distance}</span>
-              <span className={`text-xs ml-1 ${routeInfo.cameras === 0 ? "text-zbe-green" : "text-yellow-400"}`}>
+              <span className={`text-xs ml-1 ${
+                routeInfo.cameras === 0 ? "text-zbe-green" : routeInfo.cameras <= 2 ? "text-yellow-400" : "text-zbe-red"
+              }`}>
                 {routeInfo.cameras === 0 ? "Sin cámaras" : `${routeInfo.cameras} cam`}
               </span>
               <svg className="ml-auto text-white/40" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
