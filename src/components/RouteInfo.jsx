@@ -25,9 +25,8 @@ export default function RouteInfo({
 
   const toggleExpanded = () => setIsExpanded((prev) => !prev);
   const handleRouteSelect = (routeIdx) => {
-    if (onSelectRoute) {
-      onSelectRoute(routeIdx);
-    }
+    if (!onSelectRoute) return;
+    onSelectRoute(routeIdx);
     setIsExpanded(false);
   };
 
