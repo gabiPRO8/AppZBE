@@ -7,6 +7,7 @@ export default function RouteInfo({
   routes = [],
   selectedRoute = 0,
   onSelectRoute,
+  onMinimize,
 }) {
   const { duration, distance, cameras, totalRoutes } = info;
 
@@ -58,9 +59,21 @@ export default function RouteInfo({
             : `⚠ ${cameras} cámaras en ruta`}
         </p>
         {totalRoutes > 1 && (
-          <span className="ml-auto text-white/20 text-xs font-mono">
+          <span className={`${onMinimize ? "" : "ml-auto"} text-white/20 text-xs font-mono`}>
             {totalRoutes} alt.
           </span>
+        )}
+        {onMinimize && (
+          <button
+            onClick={onMinimize}
+            className="ml-auto w-7 h-7 rounded-xl flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all flex-shrink-0"
+            aria-label="Minimizar panel"
+            title="Minimizar"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
         )}
       </div>
 

@@ -47,6 +47,7 @@ export default function App() {
   const [routeOptions, setRouteOptions] = useState([]);
   const [camerasOnRoute, setCamerasOnRoute] = useState([]);
   const [mapZoom, setMapZoom] = useState(13);
+  const [panelMinimized, setPanelMinimized] = useState(false);
 
   // Geolocate on mount
   useEffect(() => {
@@ -163,6 +164,7 @@ export default function App() {
         routeIndex: best.idx,
         totalRoutes: routes.length,
       });
+      setPanelMinimized(false);
 
       if (!avoidZBE) {
         showStatus("info", "Ruta mas rapida seleccionada por trafico");
@@ -355,7 +357,7 @@ export default function App() {
       {/* ── BOTTOM CONTROLS ── */}
       <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
         <div className="flex flex-col items-end gap-3 px-4 pb-6 pointer-events-auto">
-          {/* Zoom + locate buttons */}
+          {/* Zoom + locate buttons — always visible */}
           <div className="flex flex-col gap-2 items-end">
             <button
               onClick={centerOnUser}
@@ -373,25 +375,53 @@ export default function App() {
             </div>
           </div>
 
-          {/* Toggle ZBE + cameras */}
-          <ToggleButton
-            avoidZBE={avoidZBE}
-            setAvoidZBE={setAvoidZBE}
-            showCameras={showCameras}
-            setShowCameras={setShowCameras}
-            cameraCount={ZBE_CAMERAS.length}
-          />
+          {/* Minimized pill — shown only when panel is minimized and route exists */}
+          {routeInfo && panelMinimized && (
+            <button
+              onClick={() => setPanelMinimized(false)}
+              className="w-full flex items-center gap-3 px-4 py-3 bg-zbe-card/95 backdrop-blur-xl border border-zbe-border rounded-3xl shadow-2xl animate-slide-up"
+              style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.7)" }}
+              aria-label="Expandir panel de ruta"
+            >
+              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                routeInfo.cameras === 0 ? "bg-zbe-green animate-pulse" : routeInfo.cameras <= 2 ? "bg-yellow-400 animate-pulse" : "bg-zbe-red animate-pulse-red"
+              }`} />
+              <span className="text-white text-sm font-semibold">{routeInfo.duration}</span>
+              <span className="text-white/50 text-sm">{routeInfo.distance}</span>
+              <span className={`text-xs ml-1 ${routeInfo.cameras === 0 ? "text-zbe-green" : "text-yellow-400"}`}>
+                {routeInfo.cameras === 0 ? "Sin cámaras" : `${routeInfo.cameras} cam`}
+              </span>
+              <svg className="ml-auto text-white/40" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+            </button>
+          )}
 
-          {/* Route info panel */}
-          {routeInfo && (
-            <RouteInfo
-              info={routeInfo}
-              avoidZBE={avoidZBE}
-              onRecalculate={calculateRoute}
-              routes={routeOptions}
-              selectedRoute={selectedRoute}
-              onSelectRoute={selectRoute}
-            />
+          {/* Full panel — hidden when minimized */}
+          {!panelMinimized && (
+            <>
+              {/* Toggle ZBE + cameras */}
+              <ToggleButton
+                avoidZBE={avoidZBE}
+                setAvoidZBE={setAvoidZBE}
+                showCameras={showCameras}
+                setShowCameras={setShowCameras}
+                cameraCount={ZBE_CAMERAS.length}
+              />
+
+              {/* Route info panel */}
+              {routeInfo && (
+                <RouteInfo
+                  info={routeInfo}
+                  avoidZBE={avoidZBE}
+                  onRecalculate={calculateRoute}
+                  routes={routeOptions}
+                  selectedRoute={selectedRoute}
+                  onSelectRoute={selectRoute}
+                  onMinimize={() => setPanelMinimized(true)}
+                />
+              )}
+            </>
           )}
         </div>
       </div>
