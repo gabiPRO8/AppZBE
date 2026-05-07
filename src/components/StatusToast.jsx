@@ -30,23 +30,21 @@ const ICONS = {
 };
 
 const COLORS = {
-  success: "bg-zbe-green/20 border-zbe-green/30 text-zbe-green",
-  warning: "bg-yellow-500/20 border-yellow-500/30 text-yellow-400",
-  error: "bg-zbe-red/20 border-zbe-red/30 text-zbe-red",
-  info: "bg-zbe-blue/20 border-zbe-blue/30 text-zbe-blue",
+  success: "bg-white text-zbe-green border-green-200",
+  warning: "bg-white text-orange-600 border-orange-200",
+  error:   "bg-white text-zbe-red border-red-200",
+  info:    "bg-white text-zbe-blue border-blue-200",
 };
 
 export default function StatusToast({ status }) {
   if (!status) return null;
-
   return (
-    <div className="absolute top-32 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-fade-in">
+    <div className="absolute top-[110px] left-1/2 -translate-x-1/2 z-40 pointer-events-none animate-fade-in px-3">
       <div
-        className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border backdrop-blur-xl shadow-2xl ${COLORS[status.type]}`}
-        style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.6)" }}
+        className={`flex items-center gap-2.5 px-4 py-2.5 rounded-full border shadow-card ${COLORS[status.type]}`}
       >
         {ICONS[status.type]}
-        <span className="text-sm font-medium whitespace-nowrap">{status.message}</span>
+        <span className="text-[13px] font-medium whitespace-nowrap">{status.message}</span>
       </div>
     </div>
   );
